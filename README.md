@@ -86,6 +86,65 @@ To stop the application:
 docker-compose down
 ```
 
+## API Examples (curl)
+
+Use these curl commands to exercise the invoices API. Replace localhost and port if your server is hosted elsewhere.
+
+1) List seeded products (seed data)
+
+```bash
+curl -s http://localhost:8000/invoices/products | jq
+```
+
+2) List seeded clients (seed data)
+
+```bash
+curl -s http://localhost:8000/invoices/clients | jq
+```
+
+3) Create a new invoice
+
+Sample JSON payload (products and clients are seeded by migrations; use ids returned from the commands above):
+
+```bash
+curl -s -X POST http://localhost:8000/invoices \
+	-H "Content-Type: application/json" \
+	-d '{
+		"issue_date": "2026-02-08",
+		"due_date": "2026-02-22",
+		"client_id": 1,
+		"address": "123 Main St",
+		"items": [
+			{"product_id": 1, "quantity": 2},
+			{"product_id": 2, "quantity": 1}
+		],
+		"tax": 2.5
+	}' | jq
+```
+
+4) List all invoices
+
+```bash
+curl -s http://localhost:8000/invoices | jq
+```
+
+5) Get a single invoice by id (replace 1 with the invoice id returned from create)
+
+```bash
+curl -s http://localhost:8000/invoices/1 | jq
+```
+
+6) Delete an invoice
+
+```bash
+curl -s -X DELETE http://localhost:8000/invoices/1 -I
+```
+
+Notes:
+- If you don't have `jq` installed, omit the `| jq` or use `python -m json.tool` to pretty-print JSON.
+- If running with Docker Desktop / Colima, use the compose commands documented above to start the server before running the curl commands.
+
+
 ## Manual Setup (Without Docker)
 
 ### 1. Create and activate a virtual environment
